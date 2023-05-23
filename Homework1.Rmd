@@ -1,0 +1,185 @@
+---
+title: "Homework 1"
+author: "YOUR NAME"
+date: "due 11:59pm 5/23/2023"
+output: html_document
+---
+
+# Learning Objective
+
+In this homework you will create a reproducible report.   
+
+**Assignment:** The information in this assignment will give a short introduction or quick tip, on the programming tools we'll be using for the class. Example code will show you how to read data from several different file formats into R structures.  
+
+Steps to follow:  
+1. Post on class slack channel any questions on the code that you don't understand.   
+2. Edit the code where asked (Sections 1 & 3)  
+3. Answer the question on reproducible result (Section 3)  
+4. Save the code and knit it.     
+    > Use Blackboard to turn in the knitted report (.html file)   
+    > Use GitHub to turn in the revised code (.rmd file)
+
+Next week we will discuss, in class, our homework experience. 
+
+### R Markdown 
+
+R Markdown is a wonderful tool that helps researchers (1) save and execute code and (2) create high-quality reports. By using R Markdown, the methods for generating the results are transparent and easily shared. This simplifies the task of creating reproducible results.
+
+For more information see
+https://rmarkdown.rstudio.com/lesson-1.html
+
+### R Programming
+
+If at any point in running R code you encounter a function named "foo" that you do not recognize, or you want to check what the default settings are, you can type in the Console window
+
+?foo
+
+to call the help documentation.
+
+### Using GitHub
+
+The directions for using GitHub for homework assignments are given here:
+http://www.princeton.edu/~mjs3/soc504_s2015/submitting_homework.shtml.
+
+The steps to using GitHub are:
+
+1. Fork  
+2. Clone
+3. Commit
+4. Push
+5. Pull Request 
+
+We will use use GitHub Classroom to simplify the process and keep things private. With GitHub Classroom every homework assignment will arrive as a link in an email message. When you click on this link, you will be sent to GitHub Classroom and asked to accept your homework. Click to accept and this will 'Fork' (step 1) the homework repository directly to your GitHub account. The link will appear on the GitHub Classroom page. Clink on the link from the Classroom page and it will open the repository in your GitHub account. From here we continue with steps 2-4 above. Step 5 will also be handled by GitHub Classroom.
+
+If you have this on your computer, you've successfully accomplished steps 1 and 2 above. Your homework is to follow the directions below, answer any questions, and turn in the homework by following steps 3-5. 
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+r <- getOption("repos")
+r["CRAN"] <- "https://cran.wustl.edu//"
+options(repos = r)
+
+if(!require(tidyverse)){
+  install.packages("tidyverse")
+}
+if(!require(readxl)){
+  install.packages("readxl")
+}
+
+library("tidyverse")
+library("readxl")
+```
+
+## 1. Edit Homework header
+
+Edit the author slot to give your name.
+
+## 2. Read data files from computer
+
+In class we learned how to load data directly from GEO. Now let's learn to read data from several different formats.
+
+I've put some example data files in the directory named data. First, let's check our current directory.
+```{r whereamI}
+getwd()
+```
+
+This shows we're in the directory we just created for this project (NOTE: R is sensitive to capital letters). We use unix commands to move between directories. This is how we can list the files in the data directory.
+
+```{r filenames}
+list.files("data")
+```
+
+And set the data directory for reading in the file.
+```{r datadir}
+datadir <- c("data")
+```
+
+Great. So now let's read these files in order.
+
+### 2a. Read in *.csv file
+
+```{r readcsv}
+data <- read.csv(file.path(datadir,"GSM2776-sample-description.csv"),
+                 row.names = 1)
+head(data,n=4)
+```
+
+We can subset the matrix by rows, or by columns
+```{r datasubset}
+data[c("GSM277628","GSM277622"),]
+data[c(4:2),c("gene","replicate")]
+```
+
+Notice how we can reorder the rows of the data matrix. This will be useful for linking gene expression data sets and covariate data from the same samples.
+
+And we can get some tabular summaries as follows:
+```{r tabulate}
+table(data$gene,data$environ)
+with(data,table(gene,environ))
+rm(data)
+```
+
+### 2b.  Read in space-delimitted *.txt  file
+
+```{r readtable}
+data <- read.table(file.path(datadir,"GSM2776-sample-description.txt"),header=T,row.names=1)
+head(data)
+```
+
+### 2c.  Read in *.xls  file
+
+```{r readxls}  
+data <- read_xls(file.path(datadir,"GSM2776-sample-description.xls"),sheet="thisone")
+head(data,n=4)
+rm(data)
+```
+
+The data from an EXCEL file is read into a tibble, not a dataframe. One immediate difference is that tibbles do not use rownames.
+
+### 2d.  Read in *.xlsx  file
+
+```{r readxlsx}  
+data <- read_xlsx(file.path(datadir,"GSM2776-sample-description.xlsx"),sheet="thisone")
+head(data,n=4)
+rm(data)
+```
+
+## 3. Reproducible Research
+
+The command sessionInfo() will dump information about the operating system you are running and packages you have loaded. This information, along with data and code, should allow someone to reproduce any results in the future. 
+```{r sessionInfo}
+sessionInfo()
+```
+
+### Q1. Why might the same command give different output?  
+
+Consider the following example:
+
+```{r rnorm}
+set.seed(50)
+par(mfrow=c(1,2))
+hist(rnorm(100))
+hist(rnorm(100))
+```
+
+Please explain why the above code creates two different histograms.
+
+### ANSWER:
+
+### Q2: Modify the code below so that the same histogram is plotted twice.
+
+```{r modifythis}
+set.seed(50)
+par(mfrow=c(1,2))
+hist(rnorm(100))
+hist(rnorm(100))
+```
+
+## 4. Knit and Turn in Assignment
+
+Please turn in your Homework1.Rmd file using GitHub and your *.html output through Blackboard. You will need to Commit the changes (a commented time/date 'save') and Push the changes from your laptop back to your GitHub homework repository. GitHub classroom will email me when these steps are completed (step 5, or Pull request).
+
+
+
